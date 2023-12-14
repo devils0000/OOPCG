@@ -1,0 +1,121 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Info {
+private:
+    string name, drivingLicense, className, dateOfBirth;
+    int rollNumber;
+    char* division;
+    char* bloodGroup;
+    long int contactNumber;
+
+public:
+    // Default constructor
+    Info() : rollNumber(0), contactNumber(0), division(nullptr), bloodGroup(nullptr) {}
+
+    // Destructor
+    ~Info() {
+        delete[] division;
+        delete[] bloodGroup;
+    }
+
+    friend class AddInfo;
+
+    void inputInfo() {
+        cin.ignore(); // Ignore the newline character left in the input stream
+        cout << "\n\n_______________*STUDENT DATABASE*______________\n\n";
+        cout << "Student Name: ";
+        getline(cin, name);
+        cout << "\nClass: ";
+        getline(cin, className);
+        cout << "\nDivision: ";
+        division = new char[10]; // Allocate memory for division
+        cin >> division;
+        cout << "\nRoll number: ";
+        cin >> rollNumber;
+        cout << "\nDate of Birth (Format- dd/mm/yyyy): ";
+        cin.ignore(); // Ignore the newline character left in the input stream
+        getline(cin, dateOfBirth);
+        cout << "\nBlood Group (A+, A-, B+, B-, AB+, AB-, O+, O-): ";
+        bloodGroup = new char[10];
+        cin >> bloodGroup;
+        cout << "\nEnter driving licence number: ";
+        cin >> drivingLicense;
+    }
+};
+
+class AddInfo {
+public:
+    long int contactNumber;
+
+    void getInfo() {
+        try {
+            cout << "\nContact Number: ";
+            cin >> contactNumber;
+            if (contactNumber < 1000000000 || contactNumber > 9999999999)
+                throw contactNumber;
+        } catch (long int contactNumber) {
+            cout << "\nException caught!";
+            cout << "\nContact number entered '" << contactNumber << "' is too long!\nTry again!";
+            cout << "\nContact Number: ";
+            cin >> contactNumber;
+        }
+    }
+
+    int getRoll(Info& obj) {
+        return obj.rollNumber;
+    }
+
+    void show(Info& obj);
+};
+
+void AddInfo::show(Info& obj) {
+    cout << "\nStudent Name: " << obj.name;
+    cout << "\nClass: " << obj.className;
+    cout << "\nDivision: " << obj.division;
+    cout << "\nRoll number: " << obj.rollNumber;
+    cout << "\nDate of Birth: " << obj.dateOfBirth;
+    cout << "\nBlood Group: " << obj.bloodGroup;
+    cout << "\nDriving licence number: " << obj.drivingLicense;
+    cout << "\n-------------------------------------\n";
+}
+
+int main() {
+    const int maxSize = 30;
+    Info students[maxSize];
+    int n;
+    cout << "Enter the number of students: ";
+    cin >> n;
+    AddInfo studentInfo[maxSize];
+    for (int i = 0; i < n; i++) {
+        cout << "\n---------------------------------------\n\nEnter Details of student " << i + 1;
+        students[i].inputInfo();
+        studentInfo[i].getInfo();
+    }
+    cout << "\n_____________________________________________________________" << endl;
+    for (int i = 0; i < n; i++) {
+        studentInfo[i].show(students[i]);
+    }
+    while (true) {
+        int roll, choice;
+        int flag = 0;
+        cout << "\nEnter student roll number to get info: ";
+        cin >> roll;
+        for (int i = 0; i < n; i++) {
+            if (roll == studentInfo[i].getRoll(students[i])) {
+                studentInfo[i].show(students[i]);
+                flag = 1;
+                break;
+            }
+        }
+        if (flag == 0)
+            cout << "\nRecord not found!";
+        cout << "\nDo you want to continue? (Enter 1 for Yes, 0 for No): ";
+        cin >> choice;
+        if (choice != 1)
+            break;
+    }
+    cout << "\nEnding the Program!";
+    return 0;
+}
